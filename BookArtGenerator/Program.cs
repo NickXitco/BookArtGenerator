@@ -7,7 +7,9 @@ using iText.Kernel.Font;
 using iText.Kernel.Geom;
 using iText.Kernel.Pdf;
 using iText.Kernel.Pdf.Colorspace;
+using iText.Layout.Borders;
 using iText.Layout.Element;
+using iText.Layout.Layout;
 using iText.Layout.Properties;
 using iText.StyledXmlParser.Jsoup.Nodes;
 using Document = iText.Layout.Document;
@@ -17,6 +19,11 @@ namespace BookArtGenerator
     internal static class Program
     {
         private const string Dest = "../../../hello_world.pdf";
+        private const int Width = 1296;
+        private const int Height = 1728;
+        private const int Inch = 72;
+        private const int FontSize = 5;
+        private const float Leading = 0.5f;
 
         public static void Main(string[] args) {
             var file = new FileInfo(Dest);
@@ -29,50 +36,78 @@ namespace BookArtGenerator
         }
 
         private static void CreatePdf(string dest, string text, Bitmap image) {
-            var document = new Document(new PdfDocument(new PdfWriter(dest)), new PageSize(1296, 1728));
-            document.SetMargins(72, 72, 72 * 2, 72);
-            var p =  new Paragraph();
-            //p.SetTextAlignment(TextAlignment.JUSTIFIED_ALL);
-            
-            var adjustedWidth = image.Width * (72 / image.HorizontalResolution);
-            var adjustedHeight = image.Height * (72 / image.VerticalResolution);
-            
+            var document = new Document(new PdfDocument(new PdfWriter(dest)), new PageSize(Width, Height));
+            document.SetMargins(Inch, Inch, 2 * Inch, Inch);
+            var adjustedWidth = image.Width * (Inch / image.HorizontalResolution);
+            var adjustedHeight = image.Height * (Inch / image.VerticalResolution);
             var font = PdfFontFactory.CreateFont(StandardFonts.HELVETICA);
 
-            var runningTotalPixelCount = 0.0;
-            var bankedPixels = 0.0;
+            Console.WriteLine(adjustedWidth.ToString());
+
+            var i = 0;
+            var masterParagraph = new Paragraph().SetMultipliedLeading(Leading).SetMargin(0).SetPadding(0).SetWidth(Width - 2 * Inch);
+            var runningHeight = 0.0;
+            var numLines = 0;
             
-            for (var i = 0; i < text.Length; i++) {
-                Text t = new Text(text[i].ToString());
+            Console.WriteLine(adjustedHeight.ToString());
+            
+            Console.WriteLine("Coloring text...");
+            while (numLines <= 228)
+            {
+                var p = new Paragraph().SetMargin(0).SetPadding(0).SetWidth(Width - 2 * Inch)
+                    .SetTextAlignment(TextAlignment.JUSTIFIED_ALL);
+                var runningWidth = 0.0;
+                var bankedPixels = 0.0;
 
-                var pixelWidth = font.GetWidth(text[i], 5);
-
-                var roundedWidth = (int) Math.Round(pixelWidth + bankedPixels);
-                runningTotalPixelCount += pixelWidth;
-                bankedPixels = pixelWidth - roundedWidth;
-
-                if (runningTotalPixelCount > adjustedWidth)
+                var maxAscender = 0;
+                var maxDescender = 0;
+                
+                while (i < text.Length)
                 {
-                    var s = "";
-                    for (var j = i - 25; j < i + 1; j++)
-                    {
-                        s += text[j].ToString();
-                    }
-                    Console.WriteLine(runningTotalPixelCount.ToString() + ": " + s);
-                    runningTotalPixelCount = 0;
-                }
-                
-                
-                var color = ConvertToCmyk(image.GetPixel(i % image.Width, i / image.Height));
-                
-                t.SetFontColor(iText.Kernel.Colors.Color.MakeColor(new PdfDeviceCs.Cmyk(), color));
-                t.SetFont(font);
-                t.SetFontSize(5);
+                    Text t = new Text(text[i].ToString());
 
-                p.Add(t);
+                    var pixelWidth = font.GetWidth(text[i], FontSize);
+
+                    maxAscender = Math.Max(maxAscender, font.GetAscent(text[i], FontSize));
+                    maxDescender = Math.Min(maxDescender, font.GetDescent(text[i], FontSize));
+                    
+                    var roundedWidth = (int) Math.Round(pixelWidth + bankedPixels);
+
+                    if (runningWidth + pixelWidth > adjustedWidth) break;
+
+                    runningWidth += pixelWidth;
+
+                    bankedPixels = pixelWidth - roundedWidth;
+
+                    var color = ConvertToCmyk(image.GetPixel(i % image.Width, i / image.Height));
+
+                    t.SetFontColor(iText.Kernel.Colors.Color.MakeColor(new PdfDeviceCs.Cmyk(), color));
+                    t.SetFont(font);
+                    t.SetFontSize(FontSize);
+
+                    i++;
+
+                    p.Add(t);
+                }
+
+                var s = "";
+                for (var j = i - 25; j < i; j++)
+                {
+                    s += text[j].ToString();
+                }
+
+                Console.WriteLine(runningWidth + ": " + s);
+
+                numLines++;
+                runningHeight += (maxAscender - maxDescender) + FontSize * (Leading);
+                masterParagraph.Add(p);
+                
             }
-            
-            document.Add(p);
+
+            Console.WriteLine(runningHeight);
+            Console.WriteLine("Adding to document...");
+            document.Add(masterParagraph);
+            Console.WriteLine("Closing out...");
             document.Close();
         }
 
