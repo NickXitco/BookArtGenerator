@@ -8,6 +8,7 @@
         <e p="bin" t="ExcludeRecursive" />
         <e p="BookArtGenerator.csproj" t="IncludeRecursive" />
         <e p="hello_world.pdf" t="Include" />
+        <e p="hello_world_height_compare.pdf" t="Include" />
         <e p="juno.jpg" t="Include" />
         <e p="juno.txt" t="Include" />
         <e p="obj" t="ExcludeRecursive">

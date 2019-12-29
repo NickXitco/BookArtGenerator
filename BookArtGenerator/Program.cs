@@ -18,7 +18,7 @@ namespace BookArtGenerator
 {
     internal static class Program
     {
-        private const string Dest = "../../../hello_world.pdf";
+        private const string Dest = "../../../hello_world_height_compare.pdf";
         private const int Width = 18 * Inch;
         private const int Height = 8 * Inch;
         private const int Inch = 72;
@@ -54,8 +54,7 @@ namespace BookArtGenerator
             Console.WriteLine("Coloring text...");
             while (numLines <= 228)
             {
-                var p = new Paragraph().SetMargin(0).SetPadding(0).SetWidth(Width - 2 * Inch)
-                    .SetTextAlignment(TextAlignment.JUSTIFIED_ALL);
+                var p = new Paragraph().SetMargin(0).SetPadding(0).SetWidth(Width - 2 * Inch).SetHeight(FontSize * (Leading + 0.8125f)).SetTextAlignment(TextAlignment.JUSTIFIED_ALL);
                 var runningWidth = 0.0;
                 var bankedPixels = 0.0;
 
