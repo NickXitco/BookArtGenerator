@@ -18,7 +18,7 @@ namespace BookArtGenerator
 {
     internal static class Program
     {
-        private const string Dest = "../../../hello_world.pdf";
+        private const string Dest = "../../../hello_world_singleparagraph.pdf";
         private const int Width = 18 * Inch;
         private const int Height = 8 * Inch;
         private const int Inch = 72;
@@ -45,7 +45,7 @@ namespace BookArtGenerator
             Console.WriteLine(adjustedWidth.ToString());
 
             var i = 0;
-            //var masterParagraph = new Paragraph().SetMultipliedLeading(Leading).SetMargin(0).SetPadding(0).SetWidth(Width - 2 * Inch).SetHeight(Height - 4 * Inch);
+            var masterParagraph = new Paragraph().SetMultipliedLeading(Leading).SetMargin(0).SetPadding(0).SetWidth(Width - 2 * Inch).SetHeight(Height - 4 * Inch);
             var runningHeight = 0.0;
             var numLines = 0;
             
@@ -94,7 +94,7 @@ namespace BookArtGenerator
 
                 numLines++;
                 runningHeight += FontSize * (Leading + 1);
-                document.Add(p);
+                masterParagraph.Add(p);
             }
             
             
@@ -109,7 +109,7 @@ namespace BookArtGenerator
 
             Console.WriteLine(runningHeight);
             Console.WriteLine("Adding to document...");
-            //document.Add(masterParagraph);
+            document.Add(masterParagraph);
             document.Add(titleBox);
             Console.WriteLine("Closing out...");
             document.Close();
