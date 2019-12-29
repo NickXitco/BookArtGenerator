@@ -19,8 +19,8 @@ namespace BookArtGenerator
     internal static class Program
     {
         private const string Dest = "../../../hello_world.pdf";
-        private const int Width = 1296;
-        private const int Height = 1728;
+        private const int Width = 18 * Inch;
+        private const int Height = 8 * Inch;
         private const int Inch = 72;
         private const int FontSize = 5;
         private const float Leading = 0.5f;
@@ -45,7 +45,7 @@ namespace BookArtGenerator
             Console.WriteLine(adjustedWidth.ToString());
 
             var i = 0;
-            var masterParagraph = new Paragraph().SetMultipliedLeading(Leading).SetMargin(0).SetPadding(0).SetWidth(Width - 2 * Inch);
+            //var masterParagraph = new Paragraph().SetMultipliedLeading(Leading).SetMargin(0).SetPadding(0).SetWidth(Width - 2 * Inch).SetHeight(Height - 4 * Inch);
             var runningHeight = 0.0;
             var numLines = 0;
             
@@ -59,18 +59,12 @@ namespace BookArtGenerator
                 var runningWidth = 0.0;
                 var bankedPixels = 0.0;
 
-                var maxAscender = 0;
-                var maxDescender = 0;
-                
                 while (i < text.Length)
                 {
                     Text t = new Text(text[i].ToString());
 
                     var pixelWidth = font.GetWidth(text[i], FontSize);
 
-                    maxAscender = Math.Max(maxAscender, font.GetAscent(text[i], FontSize));
-                    maxDescender = Math.Min(maxDescender, font.GetDescent(text[i], FontSize));
-                    
                     var roundedWidth = (int) Math.Round(pixelWidth + bankedPixels);
 
                     if (runningWidth + pixelWidth > adjustedWidth) break;
@@ -99,14 +93,24 @@ namespace BookArtGenerator
                 Console.WriteLine(runningWidth + ": " + s);
 
                 numLines++;
-                runningHeight += (maxAscender - maxDescender) + FontSize * (Leading);
-                masterParagraph.Add(p);
-                
+                runningHeight += FontSize * (Leading + 1);
+                document.Add(p);
             }
+            
+            
+            var titleBox = new Paragraph().SetWidth(Width).SetHeight(Inch);
+            var titleFont = PdfFontFactory.CreateFont(StandardFonts.HELVETICA_BOLD);
+            
+            Text title = new Text("JUNO");
+            title.SetFont(titleFont);
+            title.SetFontSize(40);
+            titleBox.Add(title);
+            
 
             Console.WriteLine(runningHeight);
             Console.WriteLine("Adding to document...");
-            document.Add(masterParagraph);
+            //document.Add(masterParagraph);
+            document.Add(titleBox);
             Console.WriteLine("Closing out...");
             document.Close();
         }
