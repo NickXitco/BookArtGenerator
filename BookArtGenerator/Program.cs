@@ -54,8 +54,7 @@ namespace BookArtGenerator
             Console.WriteLine("Coloring text...");
             while (numLines <= 228)
             {
-                var p = new Paragraph().SetMargin(0).SetPadding(0).SetWidth(Width - 2 * Inch)
-                    .SetTextAlignment(TextAlignment.JUSTIFIED_ALL);
+                var p = new Paragraph().SetMargin(0).SetPadding(0).SetWidth(Width - 2 * Inch).SetTextAlignment(TextAlignment.JUSTIFIED_ALL);
                 var runningWidth = 0.0;
                 var bankedPixels = 0.0;
 
