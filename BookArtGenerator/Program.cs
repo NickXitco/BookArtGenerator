@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using iText.IO.Font.Constants;
+using iText.Kernel.Colors;
 using iText.Kernel.Font;
 using iText.Kernel.Geom;
 using iText.Kernel.Pdf;
@@ -12,6 +13,7 @@ using iText.Layout.Element;
 using iText.Layout.Layout;
 using iText.Layout.Properties;
 using iText.StyledXmlParser.Jsoup.Nodes;
+using Color = System.Drawing.Color;
 using Document = iText.Layout.Document;
 
 namespace BookArtGenerator
@@ -20,10 +22,15 @@ namespace BookArtGenerator
     {
         private const string Dest = "../../../hello_world_height_compare.pdf";
         private const int Width = 18 * Inch;
-        private const int Height = 8 * Inch;
+        private const int Height = 24 * Inch;
         private const int Inch = 72;
-        private const int FontSize = 5;
+
+        private const int TextHeight = Height - 3 * Inch;
+        
+        private const float FontSize = 5f;
         private const float Leading = 0.5f;
+        private const float LeadingCoef = 2.640625f;
+        private const float PHeight = FontSize * Leading * LeadingCoef;
 
         public static void Main(string[] args) {
             var file = new FileInfo(Dest);
@@ -37,24 +44,18 @@ namespace BookArtGenerator
 
         private static void CreatePdf(string dest, string text, Bitmap image) {
             var document = new Document(new PdfDocument(new PdfWriter(dest)), new PageSize(Width, Height));
-            document.SetMargins(Inch, Inch, 2 * Inch, Inch);
+            document.SetMargins(Inch, Inch, Inch, Inch);
             var adjustedWidth = image.Width * (Inch / image.HorizontalResolution);
             var adjustedHeight = image.Height * (Inch / image.VerticalResolution);
             var font = PdfFontFactory.CreateFont(StandardFonts.HELVETICA);
 
-            Console.WriteLine(adjustedWidth.ToString());
-
             var i = 0;
-            //var masterParagraph = new Paragraph().SetMultipliedLeading(Leading).SetMargin(0).SetPadding(0).SetWidth(Width - 2 * Inch).SetHeight(Height - 4 * Inch);
-            var runningHeight = 0.0;
             var numLines = 0;
-            
-            Console.WriteLine(adjustedHeight.ToString());
-            
+
             Console.WriteLine("Coloring text...");
-            while (numLines <= 228)
+            while ((numLines + 1) * PHeight < TextHeight)
             {
-                var p = new Paragraph().SetMargin(0).SetPadding(0).SetWidth(Width - 2 * Inch).SetHeight(FontSize * (Leading + 0.8125f)).SetTextAlignment(TextAlignment.JUSTIFIED_ALL);
+                var p = new Paragraph().SetMargin(0).SetPadding(0).SetWidth(Width - 2 * Inch).SetHeight(PHeight).SetTextAlignment(TextAlignment.JUSTIFIED_ALL).SetBackgroundColor(DeviceRgb.GREEN);
                 var runningWidth = 0.0;
                 var bankedPixels = 0.0;
 
@@ -89,26 +90,22 @@ namespace BookArtGenerator
                     s += text[j].ToString();
                 }
 
-                Console.WriteLine(runningWidth + ": " + s);
-
                 numLines++;
-                runningHeight += FontSize * (Leading + 1);
                 document.Add(p);
             }
             
+            var spacer = new Paragraph().SetWidth(Width).SetHeight(TextHeight - (numLines * PHeight)).SetMargin(0).SetPadding(0).SetBackgroundColor(DeviceRgb.BLUE);
             
-            var titleBox = new Paragraph().SetWidth(Width).SetHeight(Inch);
+            var titleBox = new Paragraph().SetWidth(Width).SetHeight(Inch).SetMargin(0).SetPadding(0).SetBackgroundColor(DeviceRgb.RED);
             var titleFont = PdfFontFactory.CreateFont(StandardFonts.HELVETICA_BOLD);
             
             Text title = new Text("JUNO");
             title.SetFont(titleFont);
-            title.SetFontSize(40);
+            title.SetFontSize(50);
             titleBox.Add(title);
             
-
-            Console.WriteLine(runningHeight);
             Console.WriteLine("Adding to document...");
-            //document.Add(masterParagraph);
+            document.Add(spacer);
             document.Add(titleBox);
             Console.WriteLine("Closing out...");
             document.Close();
