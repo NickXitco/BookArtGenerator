@@ -22,7 +22,7 @@ namespace BookArtGenerator
 
         private const int TextWidth = Width - 2 * Inch;
         private const int TextHeight = Height - 3 * Inch;
-        
+
         private const float FontSize = 5f;
         private const float Leading = 0.5f;
         private const float LeadingCoef = 2.640625f;
@@ -42,12 +42,13 @@ namespace BookArtGenerator
             var document = new Document(new PdfDocument(new PdfWriter(dest)), new PageSize(Width, Height));
             document.SetMargins(Inch, Inch, Inch, Inch);
             var font = PdfFontFactory.CreateFont(StandardFonts.HELVETICA);
+            
+            image = new Bitmap(image, new Size((int) (image.Width * (Inch / image.HorizontalResolution)), (int) (image.Height * (Inch / image.VerticalResolution))));
 
             var i = 0;
             var numLines = 0;
             var bankedHeight = 0.0;
 
-            
             Console.WriteLine("Coloring text...");
             while ((numLines + 1) * PHeight < TextHeight)
             {
@@ -57,7 +58,7 @@ namespace BookArtGenerator
                 var bankedWidth = 0.0;
                 
                 var roundedHeight = (int) Math.Round(PHeight + bankedHeight);
-                bankedHeight = PHeight - roundedHeight;
+                bankedHeight = (PHeight + bankedHeight) - roundedHeight;
 
                 while (i < text.Length)
                 {
@@ -66,19 +67,19 @@ namespace BookArtGenerator
 
                     if (runningWidth + pixelWidth > TextWidth) break;
 
-                    float[] color = {1, 0, 0, 0};
+                    float[] color = {0, 0, 0, 0};
                     
                     if (roundedWidth > 0) // this isn't getting triggered like,,, 50% of the time lol
                     {
                         color = AverageColor(image, (int) Math.Floor(runningWidth),
                             (int) Math.Floor(numLines * PHeight), roundedWidth,
-                            roundedHeight); //idk how to use this function lol
+                            roundedHeight);
                     }
                     
                     runningWidth += pixelWidth;
-                    bankedWidth = pixelWidth - roundedWidth;
+                    bankedWidth = (pixelWidth + bankedWidth) - roundedWidth;
 
-                    Text t = new Text(text[i].ToString());
+                    var t = new Text(text[i].ToString());
                     t.SetFontColor(iText.Kernel.Colors.Color.MakeColor(new PdfDeviceCs.Cmyk(), color));
                     t.SetFont(font);
                     t.SetFontSize(FontSize);
@@ -117,8 +118,7 @@ namespace BookArtGenerator
             
             return ConvertToCmyk(Color.FromArgb(r, g, b));
         }
-        
-        
+
         private static float[] ConvertToCmyk(Color color) {
             var r = (float) (color.R / 255.0);
             var g = (float) (color.G / 255.0);
