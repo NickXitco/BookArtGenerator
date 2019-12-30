@@ -2,7 +2,6 @@
 using System.Drawing;
 using System.IO;
 using iText.IO.Font.Constants;
-using iText.Kernel.Colors;
 using iText.Kernel.Font;
 using iText.Kernel.Geom;
 using iText.Kernel.Pdf;
@@ -91,21 +90,6 @@ namespace BookArtGenerator
                 numLines++;
                 document.Add(p);
             }
-
-            var spacer = new Paragraph().SetWidth(Width).SetHeight(TextHeight - (numLines * PHeight)).SetMargin(0)
-                .SetPadding(0);
-
-            var titleBox = new Paragraph().SetWidth(Width).SetHeight(Inch).SetMargin(0).SetPadding(0);
-            var titleFont = PdfFontFactory.CreateFont(StandardFonts.HELVETICA_BOLD);
-            
-            Text title = new Text("JUNO");
-            title.SetFont(titleFont);
-            title.SetFontSize(50);
-            titleBox.Add(title);
-            
-            Console.WriteLine("Adding to document...");
-            document.Add(spacer);
-            document.Add(titleBox);
             Console.WriteLine("Closing out...");
             document.Close();
         }
