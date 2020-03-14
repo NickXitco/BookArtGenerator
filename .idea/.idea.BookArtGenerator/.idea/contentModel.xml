@@ -1,12 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ContentModelStore">
-    <e p="C:\Users\nxitc\.Rider2019.3\system\extResources" t="IncludeRecursive" />
-    <e p="C:\Users\nxitc\.Rider2019.3\system\resharper-host\local\Transient\ReSharperHost\v193\SolutionCaches\_BookArtGenerator.-1404313713.00" t="ExcludeRecursive" />
-    <e p="C:\Users\nxitc\Desktop\BookArtGenerator" t="IncludeFlat">
+    <e p="C:\Users\Nick\.Rider2019.3\system\extResources" t="IncludeRecursive" />
+    <e p="C:\Users\Nick\.Rider2019.3\system\resharper-host\local\Transient\ReSharperHost\v193\SolutionCaches\_BookArtGenerator.-1675574986.00" t="ExcludeRecursive" />
+    <e p="C:\Users\Nick\Contacts\Desktop\BookArtGenerator\BookArtGenerator" t="IncludeFlat">
       <e p="BookArtGenerator" t="IncludeRecursive">
         <e p="bin" t="ExcludeRecursive" />
         <e p="BookArtGenerator.csproj" t="IncludeRecursive" />
+        <e p="cmbyn.jpg" t="Include" />
+        <e p="cmbyn.pdf" t="Include" />
+        <e p="cmbyn.txt" t="Include" />
+        <e p="dog.jpg" t="Include" />
+        <e p="irongiant.jpg" t="Include" />
+        <e p="irongiant.pdf" t="Include" />
+        <e p="irongiant.txt" t="Include" />
         <e p="juno.jpg" t="Include" />
         <e p="juno.pdf" t="Include" />
         <e p="juno.txt" t="Include" />

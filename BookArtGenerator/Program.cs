@@ -15,7 +15,7 @@ namespace BookArtGenerator
 {
     internal static class Program
     {
-        private const string Dest = "../../../juno.pdf";
+        private const string Dest = "../../../cmbyn.pdf";
         private const int Width = 18 * Inch;
         private const int Height = 24 * Inch;
         private const int Inch = 72;
@@ -34,8 +34,8 @@ namespace BookArtGenerator
             var file = new FileInfo(Dest);
             file.Directory?.Create();
             
-            var text = File.ReadAllText("../../../juno.txt");
-            var image = new Bitmap("../../../juno.jpg");
+            var text = File.ReadAllText("../../../cmbyn.txt");
+            var image = new Bitmap("../../../cmbyn.jpg");
             
             CreatePdf(Dest, text, image);
         }
